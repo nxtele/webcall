@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8" />
+  <title>NXWPHONE</title>
+</head>
+
+<body>
+  <h1>NXWPHONE</h1>
+  <table>
+    <tr>
+      <td> Username</td>
+      <td>
+        <input type="text" id="nxuser" placeholder="webcall account" value="" />
+      </td>
+    </tr>
+    <tr>
+      <td>Password</td>
+      <td>
+        <input type="password" id="nxpass" placeholder="webcall password" value="" />
+      </td>
+    </tr>
+
+    <tr>
+      <td>Destination Number</td>
+      <td>
+        <input type="text" id="number" placeholder="4444" value="" />
+      </td>
+    </tr>
+
+    <tr>
+      <td>Example OrderId</td>
+      <td>
+        <input type="text" id="orderId" placeholder="oid-1234" value="" /> [custom info for this call]
+      </td>
+    </tr>
+  </table>
+
+  <br />
+  <button id="connect">Connect</button>
+  <button id="call">Call</button>
+  <button id="answer">Answer</button>
+  <button id="hangup">Hangup</button>
+
+  <audio style="display: none" id="remoteAudio" controls> </audio>
+  <audio style="display: none" id="playAudio" controls> </audio>
+
+ 
+  <script src="../lib/nxwebrtc.js">  </script>
+  <script>
+
+    let NxwCall = NXW.default;
+    let nxwcall = null;
+    let currentUser = null;
+
+    function initApp() {
+      let profile = {
+        nxuser: NXW.getInput("nxuser").value, nxpass: NXW.getInput("nxpass").value,
+        logLevel: "error", retries: 0, playTone: 0xFF, nxtype: 6,
+        audioElementId: "remoteAudio", playElementId: "playAudio"
+      };
+      console.log("profile=", profile, "nxwcall=", nxwcall)
+
+      //restart nxwcall when nxuser changed
+      if (currentUser != profile.nxuser) {
+        if (nxwcall) {
+          console.log("change profile=", profile)
+          nxwcall.disconnect();
+          delete nxwcall;
+          nxwcall = null;
+        }
+        currentUser = profile.nxuser;
+      }
+      //create object
+      if (nxwcall == null) {
+        nxwcall = new NxwCall(profile)
+        setupEvents(nxwcall);
+        console.log("initApp done nxuser=" + profile.nxuser)
+      }
+    }
+
+
+    //using list for saving events
+    let list = [];
+
+    function setupEvents(nxwcall) {
+      if (nxwcall == null) {
+        console.log("skip setupEvents")
+        return;
+      }
+
+      let e = nxwcall.myEvents;
+      console.log("setupEvents e=", e)
+
+      e.on("onCallCreated", function (param1) {
+        console.log("================", "onCallCreated", param1)
+        list.push({ ts: new Date(), key: "onCallCreated", value: param1 })
+      });
+      e.on("onCallAnswered", function (param1) {
+        console.log("================", "onCallAnswered", param1)
+        list.push({ ts: new Date(), key: "onCallAnswered", value: param1 })
+      });
+      e.on("onCallReceived", function (param1) {
+        console.log("================", "onCallReceived", param1)
+        console.log("orderIdComing=" + nxwcall.comingOrderId);
+        list.push({ ts: new Date(), key: "onCallReceived", value: param1 })
+      });
+      e.on("onCallHangup", function (param1) {
+        console.log("================", "onCallHangup", param1)
+        list.push({ ts: new Date(), key: "onCallHangup", value: param1 })
+      });
+      e.on("onRegistered", function (param1) {
+        console.log("================", "onRegistered", param1)
+        list.push({ ts: new Date(), key: "onRegistered", value: param1 })
+      });
+      e.on("onServerConnect", function (param1) {
+        console.log("================", "onServerConnect", param1)
+        list.push({ ts: new Date(), key: "onServerConnect", value: param1 })
+      });
+      e.on("onConnectOK", function (param1) {
+        console.log("================", "onConnectOK", param1)
+        list.push({ ts: new Date(), key: "onConnectOK", value: param1 })
+      });
+      e.on("onRegisterOK", function (param1) {
+        console.log("================", "onRegisterOK", param1)
+        list.push({ ts: new Date(), key: "onRegisterOK", value: param1 })
+      });
+
+      e.on("error", function (param1) {
+        console.log("================", "error", param1)
+        list.push({ ts: new Date(), key: "error", value: param1 })
+      });
+    }
+
+
+    // Add click listener to call button
+    // console.log("button=", NXW.getButton('connect'))
+    NXW.getButton('connect').addEventListener("click", () => {
+
+      console.log("click call Button nxwcall=", nxwcall)
+      initApp();
+    });
+    NXW.getButton('call').addEventListener("click", () => {
+
+      if (nxwcall) {
+        //get the target number
+        let target = NXW.getInput("number").value;
+        console.log("ready call target ", target);
+        //put the custom orderId
+        nxwcall.myOrderId = NXW.getInput("orderId").value;
+        //make outgoing call
+        nxwcall.placeCall(target);
+      }
+    });
+
+    NXW.getButton('hangup').addEventListener("click", () => {
+      if (nxwcall != null) {
+        console.log("hangup call");
+        nxwcall.hangupCall()
+      }
+    });
+
+    NXW.getButton('answer').addEventListener("click", () => {      
+      if (nxwcall != null) {
+        //optional: get orderid from incoming call and return back
+        //nxwcall.myOrderId = nxwcall.comingOrderId;
+        console.log("answer call");
+        nxwcall.answerCall();
+      }
+    });
+
+  </script>
+</body>
+
+</html>
