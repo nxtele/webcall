@@ -110,8 +110,8 @@ nxpass|string|M|
 nxtype|number|M|NX voice call production environment is set to 6
 audioElementId|string|M|The id of the HTML component that plays the audio of the other party
 playElementId|string|M|The id of the audio component that plays the ringing, ringback, and hangup tone
-logLevel|LogLevel|M|debug: debug, warn: warning, error: error
-playTone|number|O|ALL=0xFF,RINGIN=0x01,RINGOUT=0x02,CONNECTED=0x04,HANGUP=0x08,ONLINE=0x10,CUSTOM=0x80. No special requirements, please set it to 0xFF.
+logLevel|LogLevel|M|debug, warn, error
+playTone|number|O|ALL:0xFF,RINGIN:0x01,RINGOUT:0x02,CONNECTED:0x04,HANGUP:0x08,ONLINE:0x10,CUSTOM:0x80. No special requirements, please set it to 0xFF.
 audioSrcPath|string|O|Prompt sound wav file path, the default is audio
 video|boolean|O| Whether to enable video, default false
 videoLocalElementId|string|O|id of the video component of the local video

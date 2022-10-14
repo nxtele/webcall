@@ -111,7 +111,7 @@ nxtype|number|M|NX语音通话生产环境设置为6
 audioElementId|string|M|播放对方声音的HTML组件id
 playElementId|string|M|播放振铃、回铃、挂掉提示音的audio组件id
 logLevel|LogLevel|M|debug:调试，warn:告警，error:错误
-playTone|number|O|ALL=0xFF,RINGIN=0x01,RINGOUT=0x02,CONNECTED=0x04,HANGUP=0x08,ONLINE=0x10,CUSTOM=0x80。无特殊需求，请设置为0xFF。
+playTone|number|O|ALL:0xFF,RINGIN:0x01,RINGOUT:0x02,CONNECTED:0x04,HANGUP:0x08,ONLINE:0x10,CUSTOM:0x80。无特殊需求，请设置为0xFF。
 audioSrcPath|string|O|提示音wav文件路径，默认为audio
 video|boolean|O|是否启用video，默认false
 videoLocalElementId|string|O|本地视频video组件的id
