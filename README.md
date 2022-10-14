@@ -1,4 +1,4 @@
-## start
+# start
 
 ### Web server settings
 - To use NXCLOUD SDK, you must have your own web server and must use https to access.
@@ -12,8 +12,8 @@ connect.wav|Call connected tone
 online.wav|Account online prompt tone
 
 - You can specify the directory of the prompt through the parameter audioSrcPath of the profile
-> Set the parameter playTone to define the prompt tone to be enabled during the SDK playback call <a href='#audiolist'>list</a>
-> Set the parameter audioSrcPath to specify the path where the audio file is located
+- Set the parameter playTone to define the prompt tone to be enabled during the SDK playback call <a href='#audiolist'>list</a>
+- Set the parameter audioSrcPath to specify the path where the audio file is located
 
 ### SDK usage steps
 1. Import nxwebrtc.js.
@@ -102,6 +102,7 @@ WSS|WebSocket Secure|Webrtc requires wss to access the voice server, usually web
 ## Nxwebrtc Instructions for Use
 
 <h2 id='audiolist'></h2>
+
 ### NxwAppConfig
 Attribute|Type|Required|Description
 --|:--|:--|:--
@@ -111,7 +112,7 @@ nxtype|number|M|NX voice call production environment is set to 6
 audioElementId|string|M|The id of the HTML component that plays the audio of the other party
 playElementId|string|M|The id of the audio component that plays the ringing, ringback, and hangup tone
 logLevel|LogLevel|M|debug, warn, error
-playTone|number|O|ALL:0xFF,RINGIN:0x01,RINGOUT:0x02,CONNECTED:0x04,HANGUP:0x08,ONLINE:0x10,CUSTOM:0x80. No special requirements, please set it to 0xFF.
+playTone|number|O|ALL=0xFF, RINGIN=0x01, RINGOUT=0x02, CONNECTED=0x04, HANGUP=0x08, ONLINE=0x10, CUSTOM=0x80. No special requirements, please set it to 0xFF.
 audioSrcPath|string|O|Prompt sound wav file path, the default is audio
 video|boolean|O| Whether to enable video, default false
 videoLocalElementId|string|O|id of the video component of the local video
@@ -137,6 +138,7 @@ UA_DISCONNECTED|Disconnected from wss server|onServerDisconnect
 UA_ERROR|SDK various abnormal events|error
 
 <h2 id='eventlist'></h2>
+
 ### EventEmitter event notification
 Nxwebrtc encapsulates the call-related events of the SIP bottom protocol stack, and uses the EventEmitter object to interact with the business, and the business layer can register callback functions.
 Event|Parameter Description|Description

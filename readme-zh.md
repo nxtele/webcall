@@ -1,4 +1,4 @@
-## 开始
+# 开始
 
 ### Web服务器设置
 - 使用NXCLOUD SDK，必须拥有自己的Web服务器，且必须使用https访问。
@@ -12,8 +12,8 @@ connect.wav|呼叫接通提示音
 online.wav|账号在线提示音
 
 - 可以通过 profile 的参数audioSrcPath指定提示音的目录
-> 设置参数 playTone 定义SDK播放通话过程中开启提示音<a href='#audiolist'>列表</a>
-> 设置参数 audioSrcPath 可以指定audio文件所在路径
+- 设置参数 playTone 定义SDK播放通话过程中开启提示音<a href='#audiolist'>列表</a>
+- 设置参数 audioSrcPath 可以指定audio文件所在路径
 
 ### SDK使用步骤
 1. 导入 nxwebrtc.js。
@@ -102,6 +102,7 @@ WSS|WebSocket Secure|Webrtc要求必须是wss访问语音服务器，通常为we
 ## Nxwebrtc使用说明
 
 <h2 id='audiolist'></h2>
+
 ### NxwAppConfig 
 属性|类型|必选|说明
 --|:--|:--|:--
@@ -111,7 +112,7 @@ nxtype|number|M|NX语音通话生产环境设置为6
 audioElementId|string|M|播放对方声音的HTML组件id
 playElementId|string|M|播放振铃、回铃、挂掉提示音的audio组件id
 logLevel|LogLevel|M|debug:调试，warn:告警，error:错误
-playTone|number|O|ALL:0xFF,RINGIN:0x01,RINGOUT:0x02,CONNECTED:0x04,HANGUP:0x08,ONLINE:0x10,CUSTOM:0x80。无特殊需求，请设置为0xFF。
+playTone|number|O|ALL=0xFF, RINGIN=0x01, RINGOUT=0x02, CONNECTED=0x04, HANGUP=0x08, ONLINE=0x10, CUSTOM=0x80。无特殊需求，请设置为0xFF。
 audioSrcPath|string|O|提示音wav文件路径，默认为audio
 video|boolean|O|是否启用video，默认false
 videoLocalElementId|string|O|本地视频video组件的id
@@ -137,6 +138,7 @@ UA_DISCONNECTED|从wss服务器断开|onServerDisconnect
 UA_ERROR|SDK各种异常事件|error
 
 <h2 id='eventlist'></h2>
+
 ### EventEmitter事件通知
 Nxwebrtc封装了SIP底层协议栈的呼叫相关的事件，使用EventEmitter对象和业务交互，业务层可以注册回调函数。
 Event|参数说明|说明
