@@ -105,8 +105,8 @@ WSS|WebSocket Secure|Webrtc要求必须是wss访问语音服务器，通常为we
 ### NxwAppConfig 
 属性|类型|必选|说明
 --|:--|:--|:--
-nxuser|string|M
-nxpass|string|M
+nxuser|string|M|
+nxpass|string|M|
 nxtype|number|M|NX语音通话生产环境设置为6
 audioElementId|string|M|播放对方声音的HTML组件id
 playElementId|string|M|播放振铃、回铃、挂掉提示音的audio组件id

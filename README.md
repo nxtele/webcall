@@ -105,8 +105,8 @@ WSS|WebSocket Secure|Webrtc requires wss to access the voice server, usually web
 ### NxwAppConfig
 Attribute|Type|Required|Description
 --|:--|:--|:--
-nxuser|string|M
-nxpass|string|M
+nxuser|string|M|
+nxpass|string|M|
 nxtype|number|M|NX voice call production environment is set to 6
 audioElementId|string|M|The id of the HTML component that plays the audio of the other party
 playElementId|string|M|The id of the audio component that plays the ringing, ringback, and hangup tone
