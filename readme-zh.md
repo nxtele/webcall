@@ -3,6 +3,7 @@
 ### Web服务器设置
 - 使用NXCLOUD SDK，必须拥有自己的Web服务器，且必须使用https访问。
 - Web服务器应该部署audio目录，包含5个文件：
+
 文件名|用途
 --|:--
 hangup.wav|挂机提示音

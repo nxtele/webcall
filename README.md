@@ -3,6 +3,7 @@
 ### Web server settings
 - To use NXCLOUD SDK, you must have your own web server and must use https to access.
 - The web server should deploy the audio directory, containing 5 files:
+
 filename|purpose
 --|:--
 hangup.wav|Hang-up prompt tone
