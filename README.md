@@ -1,30 +1,31 @@
 # start
 
-### Web server settings
-- To use NXCLOUD SDK, you must have your own web server and must use https to access.
-- The web server should deploy the audio directory, containing 5 files:
+## quick start
+### Initialize your web server, which must be accessed using https.
+Suppose your web server address is: https://your.website.com/ . Your web server static resources are an empty directory.
 
-filename|purpose
---|:--
-hangup.wav|Hang-up prompt tone
-ringin.wav|Incoming ringing tone
-ringout.wav|Ringback tone for outgoing calls
-connect.wav|Call connected tone
-online.wav|Account online prompt tone
+### Download static resources
+Go to your web server root directory:
+```shell
+git clone https://github.com/nxtele/webcall
+````
 
-- You can specify the directory of the prompt through the parameter audioSrcPath of the profile
-- Set the parameter playTone to define the prompt tone to be enabled during the SDK playback call <a href='#audiolist'>list</a>
-- Set the parameter audioSrcPath to specify the path where the audio file is located
+### Run the demo page
+Open in browser: https://your.website.com/example/demo.html
 
-### SDK usage steps
-1. Import nxwebrtc.js.
-2. Define the profile, set nxuser, nxpass, create an object of type NxwCall nxwcall, and use nxwcall.myEvents to set the callback method.
-3. Initiate a connection, register successfully, and enter the UA_READY state.
-4. Make a call, connect a call, and hang up a call.
-** On first run, the browser will pop up a warning that access to the microphone must be allowed. **
+**If the browser pops up a prompt 'Are you allowed to use the microphone', select Allow**
 
 ### Get WebCall account
 When logging in to WebCall, you need to use the Webcall account, which is nxuser/nxpass in the example below. You can log in to the [NXCLOUD console](https://www.nxcloud.com/webCall/mobileList) to obtain and manage them.
+
+## SDK Instructions
+
+### SDK usage steps
+1. Import nxwebrtc.js.
+2. Define profile, set nxuser, nxpass (WebCall account), logLevel, playTone and other attributes,
+3. new NxwCall(profile) creates the object nxwcall and sets the callback method based on nxwcall.myEvents.
+4. nxwcall will automatically start the state machine. After the registration is successful, it will enter the UA_READY state, and you can call in and out.
+5. It is usually necessary to perform related processing for the received event in the callback method. You can call the api to perform the corresponding functions: initiate a call, connect a call, and hang up a call.
 
 ### Example
 #### 1. Introduce nxwebrtc.js
@@ -39,34 +40,34 @@ let nxwcall = null; // the global instance of the object, not yet initialized
 #### 2. Define the profile
 ````js
 let profile = {
-    nxuser: "xxxxxxx", nxpass: "xxxxxxx",
-    logLevel: "error", playTone: 0xFF, nxtype: 6,
-    audioElementId: "remoteAudio", playElementId: "playAudio"
-  };
+nxuser: "xxxxxxx", nxpass: "xxxxxxx",
+logLevel: "error", playTone: 0xFF, nxtype: 6,
+audioElementId: "remoteAudio", playElementId: "playAudio"
+};
 ````
- - **nxuser and nxpass are NXCLOUD's assigned webcall accounts, not NXCLOUD's user accounts. **
- - audioElementId and playElementId are the ids of the audio component of the page
- - If you playTone, please refer to the tone <a href='#audiolist'>list</a>.
+- **nxuser and nxpass are NXCLOUD's assigned webcall accounts, not NXCLOUD's user accounts. **
+- audioElementId and playElementId are the ids of the audio component of the page
+- If you need to customize playTone, please refer to the <a href='#audiolist'>list</a>.
  
 
 #### 3. Write the callback function
 ````js
 function setupEvents(nxwcall) {
-    let e = nxwcall.myEvents;
-    console.log("setupEvents e=", e)
+let e = nxwcall.myEvents;
+console.log("setupEvents e=", e)
 
-    e.on("onCallCreated", function (desnationNumber) {
-        console.log("================", "onCallCreated", desnationNumber)
-    });
-    e.on("onRegistered", function (sipId) {
-        console.log("================", "onRegistered", sipId)
-    });
-    e.on("onCallReceived", function (callerNumber) {
-        console.log("================", "onCallReceived", callerNumber)
-    });
-    e.on("onCallAnswered", function () {
-        console.log("================", "onCallAnswered")
-    });
+e.on("onCallCreated", function (desnationNumber) {
+console.log("================", "onCallCreated", desnationNumber)
+});
+e.on("onRegistered", function (sipId) {
+console.log("================", "onRegistered", sipId)
+});
+e.on("onCallReceived", function (callerNumber) {
+console.log("================", "onCallReceived", callerNumber)
+});
+e.on("onCallAnswered", function () {
+console.log("================", "onCallAnswered")
+});
 }
 ````
 The nxwebrtc SDK library encapsulates multiple <a href='#eventlist'>event notifications</a>, which can interact with business logic in the corresponding event callback functions.
@@ -75,15 +76,15 @@ The nxwebrtc SDK library encapsulates multiple <a href='#eventlist'>event notifi
 Taking the defined profile as the parameter of the NxwCall constructor, the nxwcall object will be automatically created, and it will try to perform state transition automatically. First perform NXAPI authentication, then connect to the wss server, and then enter the UA_READY state after successful registration.
 ````js
 function initApp() {
-  if (nxwcall == null) {
-    nxwcall = new NxwCall(profile)
-    setupEvents(nxwcall);
-  }
+if (nxwcall == null) {
+nxwcall = new NxwCall(profile)
+setupEvents(nxwcall);
+}
 }
 ````
 
 #### 5. Start testing
-After the onRegistered callback is completed, the outgoing call can be executed and the incoming call can be processed.
+After the onRegistered callback is completed, the outgoing call can be performed and the incoming call can be processed.
 Local microphone test:
 ````js
 nxwcall.placeCall('9196')
@@ -94,15 +95,35 @@ nxwcall.placeCall('4444')
 ````
 After completing the test, your phone channel is ready.
 
-## the term
-term | meaning | remarks
---|:--|:--
-WebRTC|Web Real-Time Communication|Web-based voice real-time communication
-WSS|WebSocket Secure|Webrtc requires wss to access the voice server, usually websocket over https
+### Customize playTone
+From the start of the call to the end of the call, NXCLOUD defines a total of 5 default tones. If you do not modify the playback mechanism of the tones at all, set playTone=0xFF. If you don't want to play any tones, set playTone=0x00. If you want to play the custom tone at all, set playTone=0x80.
+Here are a few values that control the playing of the beep: they are a bitwise AND:
 
-## Nxwebrtc Instructions for Use
+value | meaning
+--|:--
+0xFF | ALL: Play all
+0x01 | RINGIN: Allow the SDK to automatically play the ringing tone
+0x02 | RINGOUT: Allow the SDK to automatically play the ringback tone
+0x04 | CONNECTED: Allow the SDK to automatically play the connection tone
+0x08 | HANGUP: Allow the SDK to automatically play the hangup tone
+0x10 | ONLINE: Allow the SDK to automatically play the online prompt
+0x80 | CUSTOM: Allow the SDK to play your custom audio file in wav or mp3 format, mono, 8kHZ or 16kHZ
+
+#### NXCLOUD SDK default 5 beeps:
+Specify the directory of the prompt through the parameter audioSrcPath of the profile
 
 <h2 id='audiolist'></h2>
+
+filename|purpose
+--|:--
+ringin.wav|Ring tone
+ringout.wav|Ringback tone
+connected.wav|Connect tone
+hangup.wav|Hangup tone
+online.wav|Online beep
+
+
+## Nxwebrtc Instructions for Use
 
 ### NxwAppConfig
 Attribute|Type|Required|Description
@@ -112,8 +133,8 @@ nxpass|string|M|
 nxtype|number|M|NX voice call production environment is set to 6
 audioElementId|string|M|The id of the HTML component that plays the audio of the other party
 playElementId|string|M|The id of the audio component that plays the ringing, ringback, and hangup tone
-logLevel|LogLevel|M|debug, warn, error
-playTone|number|O|ALL=0xFF, RINGIN=0x01, RINGOUT=0x02, CONNECTED=0x04, HANGUP=0x08, ONLINE=0x10, CUSTOM=0x80. No special requirements, please set it to 0xFF.
+logLevel|LogLevel|M|debug: debug, warn: warning, error: error
+playTone|number|O|tone playback control
 audioSrcPath|string|O|Prompt sound wav file path, the default is audio
 video|boolean|O| Whether to enable video, default false
 videoLocalElementId|string|O|id of the video component of the local video
@@ -176,7 +197,7 @@ nxwcall.placeCall(target,hdrs);
 
 #### Connect the call
 ````js
-answerCall(hdrs?: Array<string>) // The parameter hdrs is the sip header carried when 200 OK is sent to connect to the SIP call
+answerCall(hdrs?: Array<string>) // The parameter hdrs is the sip header carried when connecting SIP calls and sending 200 OK
 ````
 
 #### Reject call
@@ -214,32 +235,18 @@ disconnect()
 ````
 
 #### Play beep
-
-- It can play the system pre-defined prompt tones of ringing, ringback, connecting and hanging up, and can also play any music through the bound playElementId component.
-- Action supports start and end, which means start and stop playback.
-- type supports predefined types, including
-  > ringin: ringing for incoming calls
-  > ringout: outgoing ringback
-  > connected: the call is connected
-  > hangup: the call hangs up
-  > online: the account is online.
-  The SDK will play the above voice file according to profile.playTone when the call state is switched.
-- type also supports other complete voice file names, as long as they exist under the audioSrcPath directory, usually in wav or mp3 format.
-- Note: If the current page has no mouse and keyboard interaction, the background playback of the page will be automatically muted by the browser.
-
-
-
 ````js
 
-Declaration: play(action: string, type?: string)
+Statement: play(action: string, filename?: string)
 
-Example: nxwcall.play('start','ringout') //Play ringback tone
+Example: nxwcall.play('start','my-music.wav') //Play a custom sound
 
-     nxwcall.play('end','ringout') //stop ringback tone
-
-     nxwcall.play('start','my-music.wav') //Play custom sound
-
+nxwcall.play('end') //stop playing all prompts
 ````
+- action: start or end, start playback and stop playback.
+- filename Audio file name.
+
+**Note: If the current page has no mouse and keyboard interaction, the background playback of the page will be automatically muted by the browser**
 
 #### Send DTMF key message
 

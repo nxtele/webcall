@@ -1,30 +1,31 @@
 # 开始
 
-### Web服务器设置
-- 使用NXCLOUD SDK，必须拥有自己的Web服务器，且必须使用https访问。
-- Web服务器应该部署audio目录，包含5个文件：
+## 快速开始
+### 初始化你的web服务器，必须使用https访问。
+假设你的web服务器地址是： https://your.website.com/ 。 你的web服务器静态资源是一个空目录。
 
-文件名|用途
---|:--
-hangup.wav|挂机提示音
-ringin.wav|呼入振铃提示音
-ringout.wav|呼出的回铃音
-connect.wav|呼叫接通提示音
-online.wav|账号在线提示音
+### 下载静态资源
+进入你的web服务器根目录：
+```shell
+git clone https://github.com/nxtele/webcall
+```
 
-- 可以通过 profile 的参数audioSrcPath指定提示音的目录
-- 设置参数 playTone 定义SDK播放通话过程中开启提示音<a href='#audiolist'>列表</a>
-- 设置参数 audioSrcPath 可以指定audio文件所在路径
+### 运行demo页面
+在浏览器中打开： https://your.website.com/example/demo.html
 
-### SDK使用步骤
-1. 导入 nxwebrtc.js。
-2. 定义profile，设置 nxuser,nxpass ，创建NxwCall 类型的对象 nxwcall，使用 nxwcall.myEvents 设置回调方法。 
-3. 发起连接，注册成功，进入 UA_READY 状态。
-4. 发起呼叫、接通呼叫、挂断呼叫。
-**在首次运行时，浏览器会弹出警告，必须允许麦克风的访问权限。**
+**如果浏览器弹出'是否允许使用麦克风' 提示，选择允许**
 
 ### 获取WebCall账号
 WebCall在登录时，需要使用Webcall账号，也就是下面示例中的nxuser/nxpass，您可以登录[NXCLOUD控制台](https://www.nxcloud.com/webCall/mobileList)获取和管理它们。
+
+## SDK使用说明
+
+### SDK使用步骤
+1. 导入 nxwebrtc.js。
+2. 定义profile，设置 nxuser,nxpass(WebCall账号),logLevel,playTone等属性 ，
+3. new NxwCall(profile) 创建对象 nxwcall，并基于 nxwcall.myEvents 设置回调方法。 
+4. nxwcall会自动启动状态机，在注册成功后，进入 UA_READY 状态，可呼入呼出。
+5. 通常需要在回调方法中，针对收到的事件，执行相关的处理。可以调用api执行对应的功能：发起呼叫、接通呼叫、挂断呼叫。
 
 ### 示例
 #### 1. 引入nxwebrtc.js 
@@ -44,9 +45,9 @@ let profile = {
     audioElementId: "remoteAudio", playElementId: "playAudio"
   };
 ```
- - **nxuser和nxpass是NXCLOUD的分配的Webcall账户，不是NXCLOUD的用户账户。**
- - audioElementId 和playElementId 是页面的audio组件的id
- - 如果playTone请参考提示音<a href='#audiolist'>列表</a>。
+ - **nxuser和nxpass是NXCLOUD的分配的Webcall账户，不是NXCLOUD的用户账户**
+ - audioElementId与playElementId 是页面的audio组件的id
+ - 如果需要自定义playTone请参考<a href='#audiolist'>列表</a>。
  
 
 #### 3. 编写回调函数
@@ -94,15 +95,35 @@ nxwcall.placeCall('4444')
 ``` 
 完成测试后，代表你的电话通道已经就绪。
 
-## 术语
-术语|含义|备注
---|:--|:--
-WebRTC|Web Real-Time Communication|基于网页的语音实时通信
-WSS|WebSocket Secure|Webrtc要求必须是wss访问语音服务器，通常为websocket over https
+### 自定义playTone
+在发起通话开始，直到通话结束，NXCLOUD一共定义了5种默认提示音，如果你完全不修改提示音的播放机制，设置playTone=0xFF。如果你不想播放任何提示音，设置playTone=0x00。 如果你想完全播放自定义提示音，设置playTone=0x80。
+以下是控制播放提示音的几个值：它们是'按位与'的关系：
 
-## Nxwebrtc使用说明
+值|含义
+--|:--
+0xFF | ALL: 播放全部
+0x01 | RINGIN: 允许SDK自动播放振铃提示音
+0x02 | RINGOUT: 允许SDK自动播放回铃提示音
+0x04 | CONNECTED: 允许SDK自动播放接通提示音
+0x08 | HANGUP: 允许SDK自动播放挂断提示音
+0x10 | ONLINE: 允许SDK自动播放上线提示音
+0x80 | CUSTOM: 允许SDK播放你的自定义语音文件，格式为wav或者mp3，单声道，8kHZ或16kHZ
+
+#### NXCLOUD SDK默认的5个提示音：
+通过 profile 的参数audioSrcPath指定提示音的目录
 
 <h2 id='audiolist'></h2>
+
+文件名|用途
+--|:--
+ringin.wav|振铃提示音
+ringout.wav|回铃提示音
+connected.wav|接通提示音
+hangup.wav|挂断提示音
+online.wav|上线提示音
+
+
+## Nxwebrtc使用说明
 
 ### NxwAppConfig 
 属性|类型|必选|说明
@@ -113,7 +134,7 @@ nxtype|number|M|NX语音通话生产环境设置为6
 audioElementId|string|M|播放对方声音的HTML组件id
 playElementId|string|M|播放振铃、回铃、挂掉提示音的audio组件id
 logLevel|LogLevel|M|debug:调试，warn:告警，error:错误
-playTone|number|O|ALL=0xFF, RINGIN=0x01, RINGOUT=0x02, CONNECTED=0x04, HANGUP=0x08, ONLINE=0x10, CUSTOM=0x80。无特殊需求，请设置为0xFF。
+playTone|number|O|提示音播放控制
 audioSrcPath|string|O|提示音wav文件路径，默认为audio
 video|boolean|O|是否启用video，默认false
 videoLocalElementId|string|O|本地视频video组件的id
@@ -214,32 +235,18 @@ disconnect()
 ```
 
 #### 播放提示音
-
-- 可播放振铃、回铃、接通、挂断的系统预定义提示音，也可通过绑定的playElementId组件播放任意音乐.
-- action支持 start和end，代表启动播放和停止播放。
-- type支持预定义类型，包括
-  > ringin：来电振铃
-  > ringout：呼出回铃
-  > connected：呼叫接通
-  > hangup：呼叫挂断
-  > online：账户在线。
-  SDK在呼叫状态切换时会根据 profile.playTone 播放上述语音文件。
-- type也支持其他的完整语音文件名，只要在audioSrcPath目录下面存在，通常为wav或mp3格式。
-- 注意：当前页面在未曾鼠标键盘交互的情况下，页面后台放音会被浏览器自动静音。
-
-
-
 ```js
 
-声明：play(action: string, type?: string) 
+声明：play(action: string, filename?: string) 
 
-示例：nxwcall.play('start','ringout') //播放回铃音
+示例：nxwcall.play('start','my-music.wav') //播放自定义的提示音
 
-     nxwcall.play('end','ringout') //停止回铃音
-
-     nxwcall.play('start','my-music.wav') //播放自定义的提示音
-
+     nxwcall.play('end') //停止播放所有提示音
 ```
+- action: start 或 end，启动播放和停止播放。
+- filename 音频文件名。
+
+**注意：当前页面在未曾鼠标键盘交互的情况下，页面后台放音会被浏览器自动静音**
 
 #### 发送DTMF按键信息
 
